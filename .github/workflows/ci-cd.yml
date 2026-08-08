@@ -44,7 +44,7 @@ jobs:
         working-directory: ./devops-service
         run: mvn test
 
-  # JOB 3: Quét mã nguồn với SonarQube (Thêm mới từ ảnh hướng dẫn)
+  # JOB 3: Quét mã nguồn & Kiểm tra Quality Gate với SonarQube
   sonar-scan:
     runs-on: self-hosted
     needs: test
@@ -52,7 +52,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Tắt shallow clone để SonarQube phân tích chính xác lịch sử commit
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -71,9 +71,19 @@ jobs:
           projectBaseDir: ./devops-service
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # Hoặc ${{ vars.SONAR_HOST_URL }} tùy cách bạn lưu ở GitHub
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-  # JOB 4: Quét lỗ hổng bảo mật & Lộ secret bằng Gitleaks/Trivy
+      # Step mới thêm từ ảnh hướng dẫn:
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # JOB 4: Quét lỗ hổng bảo mật & Lộ secret
   security-check:
     runs-on: self-hosted
     needs: sonar-scan
@@ -81,13 +91,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1. Quét lộ secret bằng Gitleaks
       - name: Gitleaks Code Scan
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2. Cài đặt Trivy CLI trực tiếp
       - name: Install Trivy CLI
         run: |
           sudo apt-get install wget gnupg -y
@@ -96,7 +104,6 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install trivy -y
 
-      # 3. Chạy Trivy quét trực tiếp ép tham số bỏ qua Maven
       - name: Trivy FS Scan
         run: |
           trivy fs --scanners vuln,secret --skip-dirs .mvn ./devops-service || true
