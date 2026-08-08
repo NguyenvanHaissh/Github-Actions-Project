@@ -9,7 +9,7 @@ on:
 jobs:
   # JOB 1: Biên dịch và kiểm tra Code Java
   compile:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
 
   # JOB 2: Quét lỗ hổng bảo mật & Lộ secret
   security-check:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: compile
     steps:
       - name: Checkout repository
