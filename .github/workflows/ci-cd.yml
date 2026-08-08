@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # JOB 1: Biên dịch và kiểm tra Code Java
+# JOB 1: Biên dịch và kiểm tra Code Java
   compile:
     runs-on: self-hosted
     steps:
@@ -23,7 +23,9 @@ jobs:
 
       - name: Compile with Maven
         working-directory: ./devops-service
-        run: mvn compile
+        run: |
+          chmod +x mvnw
+          ./mvnw compile
 
   # JOB 2: Quét lỗ hổng bảo mật & Lộ secret
   security-check:
