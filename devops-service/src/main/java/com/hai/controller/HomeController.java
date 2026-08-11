@@ -12,4 +12,9 @@ public class HomeController {
     public ApiResponse getMess(){
         return new ApiResponse("chuc ban thanh cong");
     }
+    
+    @GetMapping("ci/cd")
+    public ApiResponse testCiCd(){
+        return new ApiResponse("Chuc mừng! Quy trình CI/CD GitOps đã tự động deploy API mới thành công!");
+    }
 }
