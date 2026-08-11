@@ -137,9 +137,7 @@ jobs:
         working-directory: ./devops-service
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}
-          mvn compile jib:build \
-            -Dimage=nguyenvanhai2005/devops-service:$IMAGE_TAG \
-            -Djib.to.tags=latest
+          mvn compile jib:build -Dimage=nguyenvanhai2005/devops-service:$IMAGE_TAG -Djib.to.tags=latest
 
       - name: Update manifest repository
         env:
