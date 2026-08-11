@@ -132,4 +132,8 @@ jobs:
 
       - name: Build and Push with Jib
         working-directory: ./devops-service
-        run: mvn compile jib:build -Dimage=nguyenvanhai2005/devops-service:latest
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::7}
+          mvn compile jib:build \
+            -Dimage=nguyenvanhai2005/devops-service:$IMAGE_TAG \
+            -Djib.to.tags=latest
