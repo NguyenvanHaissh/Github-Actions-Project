@@ -92,6 +92,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Clean up old Gitleaks tmp files
+        run: sudo rm -rf /tmp/gitleaks*
+
       - name: Gitleaks Code Scan
         uses: gitleaks/gitleaks-action@v2
         env:
