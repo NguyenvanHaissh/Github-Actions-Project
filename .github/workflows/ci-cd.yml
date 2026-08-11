@@ -140,20 +140,17 @@ jobs:
 
       - name: Update manifest repository
         env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }} # Hoặc Personal Access Token của bạn
+          TOKEN: ${{ secrets.PAT_TOKEN }} # <--- Sử dụng secret PAT_TOKEN vừa thêm
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           
-          # Clone repo manifests về
           git clone https://x-access-token:${TOKEN}@github.com/NguyenvanHaissh/argo-manifests.git
           cd argo-manifests
           
-          # Cập nhật tag image mới trong file deployment.yaml
           sed -i "s|image: nguyenvanhai2005/devops-service:.*|image: nguyenvanhai2005/devops-service:$IMAGE_TAG|g" deployment.yaml
           
-          # Commit và Push thay đổi lên repo argo-manifests
           git add deployment.yaml
           git commit -m "chore: update image tag to $IMAGE_TAG"
           git push
